@@ -5,6 +5,9 @@ import { useEffect, useRef, useState, useContext, createContext } from 'react';
 import { getDatabase, ref, onValue} from "firebase/database";
 import LineChart from '../../components/line-chart';
 import app from '../../components/firebase';
+import Collapse from '@mui/material/Collapse';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router'
 
@@ -13,10 +16,24 @@ var timeRound = 0;
 var timeRoundDecimal = 0
 var pointRad = 0;
 
+var xLimit = -9;
+var yLimit = 1.7;
+var zLimit = 2.3;
+
+var timeRoundAlerta = 0;
+
 const database = getDatabase();
 const dataRef = ref(database, '/accel');
+var xAlertArray = [];
+var yAlertArray = [];
+var zAlertArray = [];
+
 
 export default function Charts() {
+    const [openX, setOpenX] = useState(true);
+    const [openY, setOpenY] = useState(true);
+    const [openZ, setOpenZ] = useState(true);
+
     const router = useRouter();
 
     const [data, setData] = useState(null);
@@ -56,6 +73,24 @@ export default function Charts() {
             for (var key in data) {
                 if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z) { continue; }
 
+                //ALERTAS
+                if(data[key].x > xLimit){
+                    timeRoundAlerta=data[key].timestamp-firstTimestamp
+                    timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                    xAlertArray.push(timeRoundAlerta)
+                }
+                if(data[key].y > yLimit){
+                    timeRoundAlerta=data[key].timestamp-firstTimestamp
+                    timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                    yAlertArray.push(timeRoundAlerta)
+                }
+                if(data[key].z > zLimit){
+                    timeRoundAlerta=data[key].timestamp-firstTimestamp
+                    timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                    zAlertArray.push(timeRoundAlerta)
+                }
+
+
                 if(firstTimestamp == 0){
                     firstTimestamp = data[key].timestamp
                 }
@@ -69,7 +104,7 @@ export default function Charts() {
                 zCoordArray.push(data[key].z)
             }
         }        
-        else if (data && times) {
+        else {
             const keys = Object.keys(data);
             const lastKey = keys[keys.length - 1];
             
@@ -78,6 +113,23 @@ export default function Charts() {
             var zCoordArray = zCoord;
             var timestampArray = times;
             
+            //ALERTAS
+            if(data[key].x > xLimit){
+                timeRoundAlerta=data[key].timestamp-firstTimestamp
+                timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                xAlertArray.push(timeRoundAlerta)
+            }
+            if(data[key].y > yLimit){
+                timeRoundAlerta=data[key].timestamp-firstTimestamp
+                timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                yAlertArray.push(timeRoundAlerta)
+            }
+            if(data[key].z > zLimit){
+                timeRoundAlerta=data[key].timestamp-firstTimestamp
+                timeRoundAlerta = timeRoundAlerta.toFixed(2)
+                zAlertArray.push(timeRoundAlerta)
+            }
+
             timeRound=data[lastKey].timestamp-firstTimestamp
             timeRoundDecimal = timeRound.toFixed(2)
             timestampArray.push(timeRoundDecimal)
@@ -106,10 +158,9 @@ export default function Charts() {
 
             
             <div>Inserir número de amostras pretendido:</div>
-            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+            <input type="text" value={inputValue !== null ? inputValue : undefined} onChange={(e) => setInputValue(e.target.value)} />
             <div>(mostra todos por default)</div>
 
-            <p align="center" style={{fontSize: 40}}>Monitorização acelerómetros</p>
 
             {times ? (
                 <>
@@ -138,6 +189,34 @@ export default function Charts() {
                                 backgroundColor = 'rgba(250, 100, 25, 0.5)'
                                 pointRadius = {pointRad}
                                 />
+                                <div>
+            <Collapse in={openX}>
+                <Alert onClose={() => {setOpenX(false)}} severity="warning" type="x">
+                <AlertTitle>Warning</AlertTitle>
+                    Unusual value of X at timestamps
+                    <p/><strong>{JSON.stringify(xAlertArray)} </strong>
+                    <p/>Threshold considered: X {'>'} {xLimit}
+                </Alert>
+            </Collapse>
+            
+            <Collapse in={openY}>
+                <Alert onClose={() => {setOpenY(false)}} severity="warning" type="x">
+                <AlertTitle>Warning</AlertTitle>
+                    Unusual value of Y at timestamps 
+                    <p/><strong>{JSON.stringify(yAlertArray)} </strong>
+                    <p/>Threshold considered: Y {'>'} {yLimit}
+                </Alert>
+            </Collapse>
+
+            <Collapse in={openZ}>
+                <Alert onClose={() => {setOpenZ(false)}} severity="warning" type="x">
+                <AlertTitle>Warning</AlertTitle>
+                    Unusual value of Z at timestamps 
+                    <p/><strong>{JSON.stringify(zAlertArray)} </strong>
+                    <p/>Threshold considered: Z {'>'} {zLimit}
+                </Alert>
+            </Collapse>
+            </div>
                 </>
             ) : (
                 <p>Loading...</p>

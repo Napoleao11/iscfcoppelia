@@ -6,6 +6,8 @@ from requests import post
 app = Flask(__name__)
 api = Api(app)
 
+firsttime = 0
+
 parser = reqparse.RequestParser()
 parser.add_argument('data', type=dict, required=True)
 
@@ -13,8 +15,7 @@ parser.add_argument('data', type=dict, required=True)
 class Accel(Resource):
     #def get(self, todo_id):
      #   return {todo_id: todos[todo_id]}
-
-
+     
     def post(self):
         data = parser.parse_args()
         data = data['data']

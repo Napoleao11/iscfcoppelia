@@ -33,7 +33,7 @@ export default function Layout({ children, home }) {
               src="/images/logo_nova.png"
               height={144}
               width={144}
-              alt=""
+              alt="Loading image..."
             />
             <h1 className={utilStyles.heading2Xl}>{name}</h1>
           </>
@@ -45,7 +45,8 @@ export default function Layout({ children, home }) {
                 src="/images/logo_nova.png"
                 height={108}
                 width={108}
-                alt=""
+                alt="Loading image..."
+
               />
             </Link>
             <h2 className={utilStyles.headingLg}>

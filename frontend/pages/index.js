@@ -26,6 +26,7 @@ export default function Home({ allPostsData }) {
           <Image
               priority
               src="/images/simulacao.png"
+              alt="Loading image..."
               width={500}
               height={300}
             />
@@ -39,7 +40,7 @@ export default function Home({ allPostsData }) {
       <p align="justify" style={ {marginTop: -15}}>   -Repositório no Github e deployment na plataforma Vercel.</p>
       <p align="justify" style={ {marginTop: -15}}>   -Dashboard com charts/tables configuráveis.</p>
       <p align="justify" style={ {marginTop: -15}}>   -Autenticação na aplicação.</p>
-      <p align="justify" style={ {marginTop: -15}}>   -Alarmes quando os sensores lêem valores acima ou abaixo de certos thresholds.</p>
+      <p align="justify" style={ {marginTop: -15}}>   -Alarmes quando os sensores lêem valores acima de certos thresholds.</p>
       <p align="justify"></p>
       <p align="justify"> Nota: uma vez que para recolher informação da Firebase utilizámos um listener [onValue()] em 
       vez de tentar ciclicamente [setInterval()], não fazia sentido implementarmos um input para alterar este intervalo de tempo. Assim sendo, implementámos outro input: escolher

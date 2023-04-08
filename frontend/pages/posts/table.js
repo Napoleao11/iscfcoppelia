@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -20,6 +22,9 @@ import app from '../../components/firebase';
 import { useEffect, useRef, useState, useContext, createContext } from 'react';
 import { getDatabase, ref, onValue} from "firebase/database";
 import { useRouter } from 'next/router';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+
 
 
 
@@ -99,21 +104,31 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-
-
-
-
+var xLimit = -9;
+var yLimit = 1.7;
+var zLimit = 2.3;
 
 var index = 0;
 var firsttime = 0;
 var time = 0;
 var timeRoundDecimal = 0
 
+var timeRoundAlerta = 0;
+
+var xAlertArray = [];
+var yAlertArray = [];
+var zAlertArray = [];
+
 
 export default function TablePage() {
+    const [openX, setOpenX] = useState(true);
+    const [openY, setOpenY] = useState(true);
+    const [openZ, setOpenZ] = useState(true);
+
     const router = useRouter();
 
-   
+    const [open, setOpen] = useState(true);
+
     const [data, setData] = useState(null);
     const [rows, setRow] = useState(null);
 
@@ -154,25 +169,73 @@ export default function TablePage() {
     });
 
     useEffect(() => {
-      var rowsArray = [];
+      
 
-      for (var key in data) {
-        if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z)    { continue; }
+      if(firsttime == 0){
+        var rowsArray = [];
+        for (var key in data) {
+          if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z)    { continue; }
 
-        if(firsttime==0){
-            firsttime=data[key].timestamp
+           //ALERTAS
+           if(data[key].x > xLimit){
+            timeRoundAlerta=data[key].timestamp-firsttime
+            timeRoundAlerta = timeRoundAlerta.toFixed(2)
+            xAlertArray.push(timeRoundAlerta)
+          }
+          if(data[key].y > yLimit){
+              timeRoundAlerta=data[key].timestamp-firsttime
+              timeRoundAlerta = timeRoundAlerta.toFixed(2)
+              yAlertArray.push(timeRoundAlerta)
+          }
+          if(data[key].z > zLimit){
+              timeRoundAlerta=data[key].timestamp-firsttime
+              timeRoundAlerta = timeRoundAlerta.toFixed(2)
+              zAlertArray.push(timeRoundAlerta)
+          }
+
+          if(firsttime==0){
+              firsttime=data[key].timestamp
+          }
+          
+          time=data[key].timestamp-firsttime
+          timeRoundDecimal = time.toFixed(2)
+          rowsArray.push(createData(index, timeRoundDecimal, data[key].x.toFixed(8), data[key].y.toFixed(8), data[key].z.toFixed(8)))
+          index++
+        }
+      }
+      else {
+        const keys = Object.keys(data);
+        const lastKey = keys[keys.length - 1];
+
+        var rowsArray = rows;
+        time=data[lastKey].timestamp-firsttime
+        timeRoundDecimal = time.toFixed(2)
+
+        //ALERTAS
+        if(data[key].x > xLimit){
+          timeRoundAlerta=data[key].timestamp-firsttime
+          timeRoundAlerta = timeRoundAlerta.toFixed(2)
+          xAlertArray.push(timeRoundAlerta)
+        }
+        if(data[key].y > yLimit){
+            timeRoundAlerta=data[key].timestamp-firsttime
+            timeRoundAlerta = timeRoundAlerta.toFixed(2)
+            yAlertArray.push(timeRoundAlerta)
+        }
+        if(data[key].z > zLimit){
+            timeRoundAlerta=data[key].timestamp-firsttime
+            timeRoundAlerta = timeRoundAlerta.toFixed(2)
+            zAlertArray.push(timeRoundAlerta)
         }
         
-        time=data[key].timestamp-firsttime
-        timeRoundDecimal = time.toFixed(2)
-        rowsArray.push(createData(index, timeRoundDecimal, data[key].x.toFixed(8), data[key].y.toFixed(8), data[key].z.toFixed(8)))
+        rowsArray.push(createData(index, timeRoundDecimal, data[lastKey].x.toFixed(8), data[lastKey].y.toFixed(8), data[lastKey].z.toFixed(8)))
         index++
         
       }
 
       setRow(rowsArray)
         
-    }, [data]);    
+    }, [data]);   
     
       return (
 
@@ -247,6 +310,34 @@ export default function TablePage() {
       </TableFooter>
       </Table>
     </TableContainer>
+    <div>
+      <Collapse in={openX}>
+          <Alert onClose={() => {setOpenX(false)}} severity="warning" type="x">
+          <AlertTitle>Warning</AlertTitle>
+              Unusual value of X at timestamps
+              <p/><strong>{JSON.stringify(xAlertArray)} </strong>
+              <p/>Threshold considered: X {'>'} {xLimit}
+          </Alert>
+      </Collapse>
+      
+      <Collapse in={openY}>
+          <Alert onClose={() => {setOpenY(false)}} severity="warning" type="x">
+          <AlertTitle>Warning</AlertTitle>
+              Unusual value of Y at timestamps 
+              <p/><strong>{JSON.stringify(yAlertArray)} </strong>
+              <p/>Threshold considered: Y {'>'} {yLimit}
+          </Alert>
+      </Collapse>
+
+      <Collapse in={openZ}>
+          <Alert onClose={() => {setOpenZ(false)}} severity="warning" type="x">
+          <AlertTitle>Warning</AlertTitle>
+              Unusual value of Z at timestamps 
+              <p/><strong>{JSON.stringify(zAlertArray)} </strong>
+              <p/>Threshold considered: Z {'>'} {zLimit}
+          </Alert>
+      </Collapse>
+    </div>
                 </>
             ) : (
                 <p>Loading...</p>
