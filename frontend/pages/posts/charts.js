@@ -8,7 +8,7 @@ import app from '../../components/firebase';
 import Button from '@mui/material/Button';
 import { useRouter } from 'next/router'
 
-var firstTime = 0;
+var firstTimestamp = 0;
 var timeRound = 0;
 var timeRoundDecimal = 0
 var pointRad = 0;
@@ -18,6 +18,7 @@ const dataRef = ref(database, '/accel');
 
 export default function Charts() {
     const router = useRouter();
+
     const [data, setData] = useState(null);
     const [xCoord, setX] = useState(null);
     const [yCoord, setY] = useState(null);
@@ -32,42 +33,65 @@ export default function Charts() {
     }
     
     useEffect(() => {
+        return onValue(dataRef, (snapshot) => {
+            setData(snapshot.val())
+            
+        });     
+    }, []);
+
+    useEffect(() => {
         if (!sessionStorage.getItem("isLoggedIn")){
             router.push('/');
             return;
-        }
+        }   
+    });
+    
+    useEffect(() => {
 
-        const xCoordArray = [];
-        const yCoordArray = [];
-        const zCoordArray = [];
-        const timestampArray = [];
-        
-        onValue(dataRef, (snapshot) => {
-            setData(snapshot.val())
-        });
+        if(firstTimestamp == 0){
+            var xCoordArray = [];
+            var yCoordArray = [];
+            var zCoordArray = [];
+            var timestampArray = [];
+            for (var key in data) {
+                if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z) { continue; }
 
-        //push data if data valid
-        for (var key in data) {
-            if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z) { continue; }
+                if(firstTimestamp == 0){
+                    firstTimestamp = data[key].timestamp
+                }
+                
+                timeRound=data[key].timestamp-firstTimestamp
+                timeRoundDecimal = timeRound.toFixed(2)
 
-            if(firstTime == 0){
-                firstTime = data[key].timestamp
+                timestampArray.push(timeRoundDecimal)
+                xCoordArray.push(data[key].x)
+                yCoordArray.push(data[key].y)
+                zCoordArray.push(data[key].z)
             }
+        }        
+        else if (data && times) {
+            const keys = Object.keys(data);
+            const lastKey = keys[keys.length - 1];
             
-            timeRound=data[key].timestamp-firstTime
+            var xCoordArray = xCoord;
+            var yCoordArray = yCoord;
+            var zCoordArray = zCoord;
+            var timestampArray = times;
+            
+            timeRound=data[lastKey].timestamp-firstTimestamp
             timeRoundDecimal = timeRound.toFixed(2)
             timestampArray.push(timeRoundDecimal)
-            xCoordArray.push(data[key].x)
-            yCoordArray.push(data[key].y)
-            zCoordArray.push(data[key].z)
+            xCoordArray.push(data[lastKey].x)
+            yCoordArray.push(data[lastKey].y)
+            zCoordArray.push(data[lastKey].z)
         }
 
-        //set variable
         setTime(timestampArray)
         setX(xCoordArray)
         setY(yCoordArray)
-        setZ(zCoordArray)   
-    });    
+        setZ(zCoordArray)
+
+    }, [data])
     
     return (
         <Layout>
@@ -87,7 +111,7 @@ export default function Charts() {
 
             <p align="center" style={{fontSize: 40}}>Monitorização acelerómetros</p>
 
-            {data ? (
+            {times ? (
                 <>
                     <LineChart labels={times.slice(-inputValue)} data={xCoord.slice(-inputValue)} 
                                 label='Graph Accel X'
@@ -120,11 +144,8 @@ export default function Charts() {
             )}
             <Head>
                 <title>First Post</title>
-                <link rel="icon" href="/images/ricfazeres.jpg" />
+                <link rel="icon" href="/images/logo_nova.png" />
             </Head>
-            <h1>
-                Go back to <Link href="/">home page</Link>
-            </h1>
         </Layout>
         
     );

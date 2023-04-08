@@ -6,8 +6,7 @@ import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { x } from '../lib/posts';
 
-const abrirPar = "(";
-const fecharPar = ")"
+
 
 export default function Home({ allPostsData }) {
   return (
@@ -48,10 +47,8 @@ export default function Home({ allPostsData }) {
       </p>
 
 
-      <Link href="/posts/charts">Open page</Link>
-      
-      
-
+      <a href="/posts/charts">Open dashboard →</a>
+    
     </Layout>
   );
 }

@@ -5,7 +5,7 @@ import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
 
 const name = 'ISCF';
-export const siteTitle = 'Next.js Sample Website';
+export const siteTitle = 'TP1 Dashboard';
 
 export default function Layout({ children, home }) {
   return (
@@ -59,7 +59,7 @@ export default function Layout({ children, home }) {
       <main>{children}</main>
       {!home && (
         <div className={styles.backToHome}>
-          <Link href="/">← Back to home</Link>
+          <a href="/">← Back to home</a>
         </div>
       )}
     </div>

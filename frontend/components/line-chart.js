@@ -49,16 +49,10 @@ export const data = {
       pointBorderColor : 'rgba(75, 192, 192, 1)',
       pointBackgroundColor : 'rgba(75, 192, 192, 1)',
       backgroundColor: 'rgba(75, 192, 192, 0.5)',
+      pointRadius: 2,
     },
-    /*{
-      label: 'Dataset 2',
-      data: labels.map(() => [1, 2, 3, 4, 420, 6, 7]),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },*/
   ],
 };
 
-const LineChart = (props) => (<Line options={options} data={{labels:props.labels, datasets:[{label:props.label,data: props.data,borderColor: props.borderColor, pointBorderColor : props.pointBorderColor, pointBackgroundColor: props.pointBackgroundColor, backgroundColor: props.backgroundColor}] }} />)
-
+const LineChart = (props) => (<Line options={options} data={{labels:props.labels, datasets:[{label:props.label,data: props.data,borderColor: props.borderColor, pointBorderColor : props.pointBorderColor, pointBackgroundColor: props.pointBackgroundColor, backgroundColor: props.backgroundColor, pointRadius: props.pointRadius}] }} />)
 export default LineChart;

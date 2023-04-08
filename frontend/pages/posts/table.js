@@ -137,44 +137,44 @@ export default function TablePage() {
       setPage(0);
     };
 
-    
 
     useEffect(() => {
-      //autenticacao
-        if (!sessionStorage.getItem("isLoggedIn")){
+      return onValue(dataRef, (snapshot) => {
+          setData(snapshot.val())
+          console.log("Chegou")
+      });  
+
+    }, []);
+
+    useEffect(() => {
+      if (!sessionStorage.getItem("isLoggedIn")){
           router.push('/');
           return;
-        } 
-        //timer.current = setInterval(() => {
-            //limpamos as vars
-            const rowsArray = [];
-            index = 0;
-            
-            
-            onValue(dataRef, (snapshot) => {
-                setData(snapshot.val())
-            });
+      }   
+    });
 
-            //push data if data valid
-            for (var key in data) {
-                if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z)    { continue; }
+    useEffect(() => {
+      var rowsArray = [];
 
-                if(firsttime==0){
-                    firsttime=data[key].timestamp
-                }
-                
-                time=data[key].timestamp-firsttime
-                timeRoundDecimal = time.toFixed(2)
-                rowsArray.push(createData(index, timeRoundDecimal, data[key].x.toFixed(8), data[key].y.toFixed(8), data[key].z.toFixed(8)))
-                index++
-                console.log(timeRoundDecimal)
-            }
+      for (var key in data) {
+        if(!data[key].timestamp || !data[key].x || !data[key].y || !data[key].z)    { continue; }
 
-            
-            setRow(rowsArray)
-    });    
+        if(firsttime==0){
+            firsttime=data[key].timestamp
+        }
+        
+        time=data[key].timestamp-firsttime
+        timeRoundDecimal = time.toFixed(2)
+        rowsArray.push(createData(index, timeRoundDecimal, data[key].x.toFixed(8), data[key].y.toFixed(8), data[key].z.toFixed(8)))
+        index++
+        
+      }
+
+      setRow(rowsArray)
+        
+    }, [data]);    
     
-    return (
+      return (
 
         <Layout>
           <div align="center">
@@ -253,18 +253,13 @@ export default function TablePage() {
             )}
             <Head>
                 <title>First Post</title>
-                <link rel="icon" href="/images/ricfazeres.jpg" />
+                <link rel="icon" href="/images/logo_nova.png" />
             </Head>
-            <h1>
-                Go back to <Link href="/">home page</Link>
-            </h1>
         </Layout>
     );
     
 
 }
-
-
 
 
 
@@ -291,4 +286,3 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function createData(index, timestamp, accel_x, accel_y, acell_z) {
   return { index, timestamp, accel_x, accel_y, acell_z };
 }
-
