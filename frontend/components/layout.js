@@ -4,14 +4,14 @@ import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
 
-const name = 'Napoleon';
+const name = 'ISCF';
 export const siteTitle = 'Next.js Sample Website';
 
 export default function Layout({ children, home }) {
   return (
     <div className={styles.container}>
       <Head>
-        <link rel="icon" href="/images/profile.jpg" />
+        <link rel="icon" href="/images/logo_nova.png" />
         <meta
           name="description"
           content="Learn how to build a personal website using Next.js"
@@ -30,8 +30,7 @@ export default function Layout({ children, home }) {
           <>
             <Image
               priority
-              src="/images/profile.jpg"
-              className={utilStyles.borderCircle}
+              src="/images/logo_nova.png"
               height={144}
               width={144}
               alt=""
@@ -43,8 +42,7 @@ export default function Layout({ children, home }) {
             <Link href="/">
               <Image
                 priority
-                src="/images/profile.jpg"
-                className={utilStyles.borderCircle}
+                src="/images/logo_nova.png"
                 height={108}
                 width={108}
                 alt=""
